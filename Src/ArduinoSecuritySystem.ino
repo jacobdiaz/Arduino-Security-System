@@ -1,14 +1,40 @@
-#include <MFRC522.h>
-#include <LiquidCrystal.h>
+#include "Arduino.h"
+#include "Buzzer.h"
+#include "LiquidCrystal.h"
+#include "RFID.h"
+#include "Servo.h"
+#include "SpeakerStereo3W.h"
+
+#define BUZZER_PIN_SIG  2
+#define LCD_PIN_RS  8
+#define LCD_PIN_E 7
+#define LCD_PIN_DB4 3
+#define LCD_PIN_DB5 4
+#define LCD_PIN_DB6 5
+#define LCD_PIN_DB7 6
+#define RFID_PIN_RST  9
+#define RFID_PIN_SDA  10
+#define SERVO9G_PIN_SIG A3
+#define STEREOSPEAKER_PIN_POS A4
 
 // RFID system initializer
-MFRC522 mfrc522(10,9);
+RFID rfid(RFID_PIN_SDA,RFID_PIN_RST);
 // LCD initializer
-LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
+LiquidCrystal lcd(LCD_PIN_RS,LCD_PIN_E,LCD_PIN_DB4,LCD_PIN_DB5,LCD_PIN_DB6,LCD_PIN_DB7);
 // Servo initializer
-Servo myservo;
+Servo servo9g;
+// Buzzer
+Buzzer buzzer(BUZZER_PIN_SIG);
+// Speaker
+SpeakerStereo3W StereoSpeaker(STEREOSPEAKER_PIN_POS);
 
-// RFID Security System attempts
+
+// Global variables
+const int servo9gRestPosition   = 20;  //Starting position
+const int servo9gTargetPosition = 150; //Position when event is detected
+unsigned int StereoSpeakerHoorayLength          = 6;                                                      // amount of notes in melody
+unsigned int StereoSpeakerHoorayMelody[]        = {NOTE_C4, NOTE_E4, NOTE_G4, NOTE_C5, NOTE_G4, NOTE_C5}; // list of notes. List length must match HoorayLength!
+unsigned int StereoSpeakerHoorayNoteDurations[] = {8      , 8      , 8      , 4      , 8      , 4      }; // note durations; 4 = quarter note, 8 = eighth note, etc. List length must match HoorayLength!
 int attempts;
 
 // States
@@ -72,16 +98,14 @@ void setup() {
   // Setup Buzzer
   // Setup Speaker
   Serial.begin(9600);
-  SPI.begin();
   lcd.begin(16,2);
-  myservo.attach(8);
-  myservo.write(170);
+  rfid.init();
+  servo9g.attach(SERVO9G_PIN_SIG);
+  servo9g.write(servo9gRestPosition);
   printMessage();
-  mfrc522.PCD_Init();
   Serial.println(sitIdleMessage);
 }
 
 void loop() {
   // if there is a card input readCard()
-  readCard
 }
