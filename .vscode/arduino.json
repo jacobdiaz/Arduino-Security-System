@@ -1,0 +1,5 @@
+{
+    "sketch": "Src\\ArduinoSecuritySystem.ino",
+    "board": "arduino:avr:uno",
+    "programmer": "AVRISP mkII"
+}
