@@ -7,6 +7,8 @@
 #include "LiquidCrystal.h"
 #include <SPI.h>
 #include <RFID.h>
+#include <Servo.h>
+
 #define SS_PIN 10
 #define RST_PIN 9
 #define LCD_PIN_RS  8
@@ -15,10 +17,15 @@
 #define LCD_PIN_DB5 4
 #define LCD_PIN_DB6 5
 #define LCD_PIN_DB7 6
+#define SERVO_PIN A3
+#define BUZZ_PIN 2
+#define SPEAK_PIN A4
 
-// Setup RFID and LCD
+// Setup RFID and LCD and servo
 RFID rfid(SS_PIN, RST_PIN);
 LiquidCrystal lcd(LCD_PIN_RS, LCD_PIN_E, LCD_PIN_DB4, LCD_PIN_DB5, LCD_PIN_DB6, LCD_PIN_DB7);
+Servo servo;
+
 
 // Array of Valid IDs
 int const validIdsSize = 1;
@@ -35,9 +42,24 @@ String rfidCard;
 int attempts = 3;
 String welcomeMessage = "Welcome Back";
 String deniedMessage  = "Incorrect ID...";
+int angle = 0;    
 
+void unlock() {
+  for (angle = 100; angle>=1; angle-=5) {    // Moves servo to open position        
+    servo_test.write(angle);              
+    delay(5);                       
+  } 
+}
+
+void lock() {
+  for (angle = 0; angle < 100; angle += 5) {    // Moves servo to locking position 
+    servo_test.write(angle);                 
+    delay(15);                       
+  }   
+}
 
 void setup() {
+  servo_test.attach(SERVO_PIN);
   Serial.begin(9600);
   lcd.begin(16, 2);
   SPI.begin();
@@ -83,6 +105,7 @@ void readInput() {
 // print message to LCD and decrement attempts
 void idDenied() {
   // TODO Make the buzzer BUZZ
+  tone(BUZZ_PIN, 200, 1000);  // added buzzer
   lcd.setCursor(0, 1);
   lcd.print("Access Denied");
   rfidCard = " ";
@@ -102,6 +125,7 @@ void idDenied() {
 // print message to LCD, unlock servoMotor, and reset attempts
 void idAccepted() {
   // TODO Unlock Servo Motor
+  unlock();
   // TODO Play Mp3?
   lcd.setCursor(0, 1);
   lcd.print("Success!");
