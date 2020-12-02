@@ -15,6 +15,7 @@
 #define LCD_PIN_DB5 4
 #define LCD_PIN_DB6 5
 #define LCD_PIN_DB7 6
+#define STEROSPEAKER_PIN A4
 
 // Setup RFID and LCD
 RFID rfid(SS_PIN, RST_PIN);
@@ -36,6 +37,9 @@ int attempts = 3;
 String welcomeMessage = "Welcome Back";
 String deniedMessage  = "Incorrect ID...";
 
+// Countdown
+int countDown = 20;  // Countind down 2 minutes
+unsigned long lastTick;
 
 void setup() {
   Serial.begin(9600);
@@ -137,8 +141,7 @@ int includes(const String store[], const int storeSize, const String query) {
   return -1;
 }
 
-int countDown = 20;  // Countind down 2 minutes
-unsigned long lastTick;
+
 //10s
 void deniedLock(){
      unsigned long currentMillis = millis();
@@ -161,12 +164,13 @@ void deniedLock(){
         }
         
       if(disabled == true){  
-      displayCountdownToSerial();
+      displayCountdown();
       lastTick += 1000;   
       }
   } 
   }
 
+// Display IdleMessage when not being unlocked
 void displayIdleMessage(){
         lcd.setCursor(0,0);
         lcd.print("Arduino Security");
@@ -174,7 +178,8 @@ void displayIdleMessage(){
         lcd.print("Tap ID Here ->");
   }
 
-void displayCountdownToSerial(){
+// Displays a countdown to lcd
+void displayCountdown(){
   int secs = countDown % 60;
   Serial.println(secs);
   Serial.print("Seconds");
