@@ -19,7 +19,7 @@
 #define LCD_PIN_DB7 6
 #define SERVO_PIN A3
 #define BUZZ_PIN 2
-#define SPEAK_PIN A4
+#define STEROSPEAKER_PIN A4
 
 // Setup RFID and LCD and servo
 RFID rfid(SS_PIN, RST_PIN);
@@ -51,12 +51,18 @@ void unlock() {
   } 
 }
 
+<<<<<<< HEAD
 void lock() {
   for (angle = 0; angle < 100; angle += 5) {    // Moves servo to locking position 
     servo_test.write(angle);                 
     delay(15);                       
   }   
 }
+=======
+// Countdown
+int countDown = 20;  // Countind down 2 minutes
+unsigned long lastTick;
+>>>>>>> e211db2b264ae8c08b2f7b9cab5f70292a3d32a2
 
 void setup() {
   servo_test.attach(SERVO_PIN);
@@ -161,8 +167,7 @@ int includes(const String store[], const int storeSize, const String query) {
   return -1;
 }
 
-int countDown = 20;  // Countind down 2 minutes
-unsigned long lastTick;
+
 //10s
 void deniedLock(){
      unsigned long currentMillis = millis();
@@ -185,12 +190,13 @@ void deniedLock(){
         }
         
       if(disabled == true){  
-      displayCountdownToSerial();
+      displayCountdown();
       lastTick += 1000;   
       }
   } 
   }
 
+// Display IdleMessage when not being unlocked
 void displayIdleMessage(){
         lcd.setCursor(0,0);
         lcd.print("Arduino Security");
@@ -198,7 +204,8 @@ void displayIdleMessage(){
         lcd.print("Tap ID Here ->");
   }
 
-void displayCountdownToSerial(){
+// Displays a countdown to lcd
+void displayCountdown(){
   int secs = countDown % 60;
   Serial.println(secs);
   Serial.print("Seconds");
