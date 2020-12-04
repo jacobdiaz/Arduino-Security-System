@@ -1,3 +1,5 @@
+#include <Servo.h>
+
 // To be able to use RFID.h, you have to include the .zip file
 // Sketch > Library > Include Zip > RFID.zip
 // ID of keychain : 153 74 198 184
@@ -7,7 +9,6 @@
 #include "LiquidCrystal.h"
 #include <SPI.h>
 #include <RFID.h>
-#include <Servo.h>
 
 #define SS_PIN 10
 #define RST_PIN 9
@@ -24,7 +25,7 @@
 // Setup RFID and LCD and servo
 RFID rfid(SS_PIN, RST_PIN);
 LiquidCrystal lcd(LCD_PIN_RS, LCD_PIN_E, LCD_PIN_DB4, LCD_PIN_DB5, LCD_PIN_DB6, LCD_PIN_DB7);
-Servo servo;
+Servo servo_test;
 
 
 // Array of Valid IDs
@@ -44,25 +45,10 @@ String welcomeMessage = "Welcome Back";
 String deniedMessage  = "Incorrect ID...";
 int angle = 0;    
 
-void unlock() {
-  for (angle = 100; angle>=1; angle-=5) {    // Moves servo to open position        
-    servo_test.write(angle);              
-    delay(5);                       
-  } 
-}
-
-<<<<<<< HEAD
-void lock() {
-  for (angle = 0; angle < 100; angle += 5) {    // Moves servo to locking position 
-    servo_test.write(angle);                 
-    delay(15);                       
-  }   
-}
-=======
 // Countdown
 int countDown = 20;  // Countind down 2 minutes
 unsigned long lastTick;
->>>>>>> e211db2b264ae8c08b2f7b9cab5f70292a3d32a2
+
 
 void setup() {
   servo_test.attach(SERVO_PIN);
@@ -103,9 +89,22 @@ void readInput() {
       cardRead = true;
     }
     rfid.halt();
-  }
+  } 
+}
 
-    
+
+void unlock() {
+  for (angle = 100; angle>=1; angle-=5) {    // Moves servo to open position        
+    servo_test.write(angle);              
+    delay(5);                       
+  } 
+}
+
+void lock() {
+  for (angle = 0; angle < 100; angle += 5) {    // Moves servo to locking position 
+    servo_test.write(angle);                 
+    delay(15);                       
+  }   
 }
 
 // print message to LCD and decrement attempts
@@ -132,7 +131,9 @@ void idDenied() {
 void idAccepted() {
   // TODO Unlock Servo Motor
   unlock();
-  // TODO Play Mp3?
+  delay(5000);
+  lock();
+  
   lcd.setCursor(0, 1);
   lcd.print("Success!");
   rfidCard = " ";
